@@ -1,0 +1,354 @@
+html, body {
+  width:100%;
+  overflow-x: hidden;
+}
+body {
+  background-color: #6D6E70 !important;
+  font-style: 'Roboto', sans-serif !important;
+}
+.form-signin .form-control {
+  font-size: 16px;
+  font-family: 'Open Sans', Arial, Helvetica, sans-serif;
+  height: auto;
+  padding: 10px;
+}
+.vertical-offset-100 {
+  padding-top: 100px;
+}
+.img-responsive {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: auto;
+}
+.img-header {
+  display: block;
+  max-width: 100%;
+  height: 100%;
+}
+.btn-success {
+  background-color: #65c178 !important;
+}
+.btn-success:hover {
+  background-color: #1b9d5c !important;
+}
+.btn-success:active {
+  border-color: #65c178 !important;
+}
+.glyphicon-edit, .glyphicon-trash {
+  color: #4D4D4D;
+}
+.glyphicon-edit, .glyphicon-trash, .glyphicon-bell, .glyphicon-info-sign {
+  padding: 0px 3px 0px 3px;
+}
+.glyphicon-log-out:hover {
+  color: #1b9d5c !important;
+}
+.header {
+  background-color: #fff;
+  padding:10px;
+}
+.navbar-custom {
+  background-color: #4D4D4D !important;
+  border-color: #4D4D4D !important;
+  padding-left:10px;
+  padding-right:10px;
+}
+.btn-custom {
+  background-color: #65c178 !important;
+  padding: 6px 12px 6px 12px !important;
+  margin-top: 8px;
+  border-color: #1b9d5c !important;
+}
+.btn-custom-2 {
+  background-color: #65c178 !important;
+  color: #fff !important;
+  border-color: #1b9d5c !important;
+  margin:3px 3px;
+}
+#register {
+  margin-top: 0px;
+}
+.btn-menu {
+  border-color: #4D4D4D !important;
+  background-color: white !important;
+  color: #4D4D4D !important;
+  padding: 5px 5px 0px 5px !important;
+  height: 30px;
+}
+.btn-custom:hover, .btn-custom-2:hover {
+  background-color: #1b9d5c !important;
+}
+.navbar-custom .navbar-nav>li>a {
+  color:#fff !important;
+}
+.navbar-custom .navbar-nav>.active>a   {
+  background-color: #4D4D4D !important;
+  color: #65c178 !important;
+}
+.user {
+  margin-top: 20px;
+}
+#sign-out {
+  color: #65c178;
+}
+p, a{
+  font-family: 'Roboto', sans-serif;
+}
+.user a {
+  color: #4D4D4D !important;
+}
+.user a:hover {
+  color: #1b9d5c !important;
+  text-decoration: none !important;
+  background-color: #fff !important;;
+}
+.author ,.orange-color {
+  color: #E9694E;
+}
+.author-user {
+  color: #6d6e70;
+}
+/*.badge {
+  background-color: #22C976 !important;
+  }*/
+  .side-bar li {
+    margin-bottom: 20px;
+    background-color: #fff;
+    border-radius: 5px;
+  }
+  .side-bar li.active>a  {
+   background-color: rgb(93, 179, 109) !important;
+ }
+ .side-bar h4 {
+  color: #000000;
+}
+.white-color {
+  color: #f5f5f5 !important;
+}
+.sub-header h2 {
+  color: #fff;
+  font-family: 'Roboto', sans-serif;
+  padding-bottom: 5px;
+  margin-top: 10px !important;
+}
+.active-book p, .green-color{
+  color: #65c178;
+}
+.inline-custom {
+  padding: 2px !important;
+}
+.save-align {
+  padding-left: 20px;
+}
+.modal-header, .modal-title, .close {
+  background-color: #65c178;
+  color:white !important;
+  text-align: center;
+  font-size: 30px;
+  font-family: 'Roboto', sans-serif !important;
+}
+.icon-btn {
+  cursor: pointer;
+}
+.danger {
+  color: #d9534f !important;
+}
+.address {
+ color: #4D4D4D;
+}
+.address:focus {
+  color: #fff;
+}
+.sidebar{
+  background-color: green;
+  height:auto!important;
+}
+.space {
+  margin-right: 5px;
+}
+.place {
+  color: #65c178;
+  margin-left: 20px;
+}
+.place:hover {
+  text-decoration: none !important;
+  color: #4D4D4D !important;
+}
+.control-label {
+  text-align: left !important;
+}
+.glyphicon-triangle-left, .glyphicon-triangle-right {
+  color: #fff;
+  cursor: pointer;
+  margin-top: 10px;
+}
+.glyphicon-triangle-left {
+  margin-left: 10px;
+}
+.glyphicon-triangle-right {
+  margin-right: 10px;
+}
+.nav-tabs>li>a {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+}
+.nav-tabs>li>.month {
+  background-color: #fff !important;
+  color: #4D4D4D !important;
+  width: 102px;
+}
+.nav-tabs>li>.date {
+  background-color: #fff !important;
+  color: #4D4D4D !important;
+  width: 248px;
+}
+.nav-tabs>li>.day {
+  background-color: #fff !important;
+  color: #4D4D4D !important;
+  width: 177px;
+}
+.nav-pills>li>.meeting {
+  background-color: #fff !important;
+  color: #4D4D4D !important;
+/*  width: 160px;
+float: left;*/
+}
+
+.meeting{
+  width: 168px;
+  height: 121px;
+}
+.meeting p {
+  font-size: 12px;
+}
+.meeting i {
+  margin-right: 5px;
+}
+.active-tab, .my-pills>li.active>a{
+  background-color: rgb(93, 179, 109) !important;
+  color: #fff !important;
+}
+.my-pills>li.active>a h5 {
+  color: #fff;
+}
+.nav-tabs {
+  margin-bottom: 10px !important;
+  border-bottom: none !important;
+}
+.my-pills {
+  margin-left: 20px;
+  margin-bottom: 10px !important;
+}
+.no-meet {
+  visibility: hidden !important;
+}
+.navbar-brand {
+  color: #fff !important;
+}
+.navbar-brand {
+  color: #fff !important;
+  font-size: 16px !important;
+}
+.search {
+ width: 291px;
+}
+.rsvp {
+  font-size: 20px;
+  margin-right: 10px;
+}
+.comments, .schedule {
+  padding: 15px;
+}
+.user-comment {
+  border-top: 1px solid #e5e5e5;
+  padding-top: 15px;
+}
+.comment-btn {
+  margin-right: 15px;
+  margin-top: 20px;
+}
+.glyph-space{
+  padding-right: 5px;
+}
+.meeting-search {
+  width: 100%;
+}
+.chosen-container {
+  width: 100% !important;
+}
+.color {
+  margin-top: 8px;
+  width: 100%;
+  height: 80px;
+}
+.schedule-search {
+  width: 100px !important;
+  display: inline;
+}
+.temp {
+  margin-top: 8px;
+}
+.grey-color {
+  color: #4D4D4D;
+}
+.disable {
+  color: #ccc;
+}
+.filter {
+  margin-top: 8px !important;
+  margin-right: 10px;
+}
+.inline-block {
+  display: inline-block;
+  width: 80%;
+  margin-top: -10px;
+}
+.inline-block-full {
+  display: inline-block;
+  width: 100%;
+  margin-top: -10px;
+}
+.invitees-form {
+  margin-top: 3px;
+}
+.space-bottom {
+  margin-bottom: 10px;
+  width: 100px;
+  height: inherit;
+  border-radius: 7px;
+}
+.space-bottom-name{
+  margin-bottom: 10px;
+}
+.space-bottom-name input{
+  width: 60%;
+  height: 30px;
+  border-radius: 7px;
+  margin-left: 10px;
+}
+.full-button {
+  width: 100%;
+}
+.edit-meeting {
+  margin-left: 90%;
+}
+.error-message {
+  text-align: left !important;
+  color: #a94442;
+}
+.errorclose{
+  float: right;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1;
+  color: #a94442;
+  margin-right: 9px;
+  border-radius: 11px;
+}
+.btn2{
+  margin-right: 15px;
+}
+.selected_page{
+  background-color: rgb(93, 179, 109);
+}

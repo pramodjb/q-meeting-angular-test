@@ -1,0 +1,702 @@
+<div>
+  <div class="container-fluid">
+    <div class="row sub-header">
+      <div class="col-sm-4">
+        <h2>My Meetings</h2>
+        <br/>
+      </div>
+      <div class="col-xs-12 col-sm-8">
+        <div class="pull-right mobile-button">
+          <a href="#" class="btn btn-default filter" data-toggle="modal" data-target="#filter">Filter</a>
+          <a href="#" class="btn btn-primary btn-custom schedule-meeting" data-toggle="modal" data-target="#schedule" ng-click="scheduleCtrl.errorMsg = false; scheduleCtrl.dataError = {}; scheduleCtrl.detailsObj.invitees = {};">Schedule a Meeting</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="schedule" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form name="scheduleform">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" ng-click="scheduleCtrl.cancel();">&times;</button>
+            <div class="modal-title">
+              Schedule a Meeting
+            </div>
+          </div>
+          <div class="modal-body">
+            <div ng-if="scheduleCtrl.scheduleSuccess == false">
+              <div class="row" ng-if="scheduleCtrl.errorMsg || scheduleCtrl.dataErrorMsg">
+                <button type="button" class="errorclose" data-dismiss="modal" ng-click="scheduleCtrl.errorMsg = false;scheduleCtrl.dataErrorMsg = false">&times;</button>
+                <label ng-show="scheduleCtrl.submitted" class="col-md-12 error-message"  for="inputError" ng-if="scheduleCtrl.errorMsg">All fields are mandatory</label>
+                <label ng-repeat="obj in scheduleCtrl.dataError" class="col-md-12 error-message">{{obj[0]}}
+                </label>
+              </div>
+              <div class="row">
+                <div class="col-md-8 space-bottom-name">
+                  <label> Meeting Name </label>
+                  <input ng-class="{ 'has-error': !scheduleCtrl.scheduleform.name.length && scheduleCtrl.submitted}" placeholder="Meeting Name" name="Mtg_name" ng-model="scheduleCtrl.scheduleform.name" value="">
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-3">
+                  <i class="glyphicon glyphicon-time glyph-space"></i>
+                  <input class="space-bottom" ng-class="{ 'has-error': !scheduleCtrl.scheduleform.from_time.length && scheduleCtrl.submitted}" placeholder="HH:MM" name="usr_time" ng-model="scheduleCtrl.scheduleform.from_time" ng-init="scheduleCtrl.scheduleform.from_time ='' ">
+                  <input class="space-bottom" ng-class="{ 'has-error': !scheduleCtrl.scheduleform.to_time.length && scheduleCtrl.submitted}" placeholder="HH:MM" name="usr_time" ng-model="scheduleCtrl.scheduleform.to_time" ng-init="scheduleCtrl.scheduleform.to_time ='' ">
+                </div>
+                <div class="col-md-3">
+                  <datepicker date-format="yyyy-MM-dd">
+                    <input class="space-bottom" ng-class="{ 'has-error': !scheduleCtrl.scheduleform.date.length && scheduleCtrl.submitted}" ng-model="scheduleCtrl.scheduleform.date" name="usr_date" type="text" placeholder="YYYY-MM-DD" ng-init="scheduleCtrl.scheduleform.date ='' "/>
+                    <i class="glyphicon glyphicon-calendar glyph-space"></i>
+                  </datepicker>
+                </div>
+                <div class="col-md-3">
+                  <i class="glyphicon glyphicon-map-marker glyph-space"></i>
+                  <div class="form-group inline-block">
+                    <select class="form-control" ng-model="scheduleCtrl.room_details" ng-class="{ 'has-error': !scheduleCtrl.scheduleform.meeting_room_id.length && scheduleCtrl.submitted}"  ng-options="obj as obj.roomName for obj in scheduleCtrl.meetingRooms" ng-change="scheduleCtrl.meetingAvailability()">
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-3" >
+                  <label ng-if="scheduleCtrl.checkErr" class="col-md-12 error-message"> Select date and time to check the availability of meeting room
+                  </label>
+                  <div ng-if="scheduleCtrl.meeting_room_avail_msg" >
+                    <p ng-if="scheduleCtrl.meeting_room_avail" style="color:#65c178"> <i class="glyphicon glyphicon-ok green-color"></i> {{scheduleCtrl.meeting_room_avail_msg}}</p>
+                    <p ng-if="!scheduleCtrl.meeting_room_avail" style="color:#a94442"><i class="glyphicon glyphicon-remove danger"></i> {{scheduleCtrl.meeting_room_avail_msg}}</p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <textarea class="form-control" ng-class="{ 'has-error': !scheduleCtrl.scheduleform.description.length && scheduleCtrl.submitted}" rows="10" id="" placeholder="Add Description" ng-model="scheduleCtrl.scheduleform.description">
+                    </textarea>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="pull-right" ng-if="scheduleCtrl.room_details.roomName" >
+                    <span class="badge space">{{scheduleCtrl.room_details.roomDetails.seating_capacity}}</span>
+                    <span class="glyphicon glyphicon-refresh space" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.ac}"></span>
+                    <i class="fa fa-wifi space" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.wifi}"></i>
+                    <i class="fa fa-microphone space" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.microphone}"></i>
+                    <span class="glyphicon glyphicon-volume-up space" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.speaker}"></span>
+                    <i class="fa fa-television space disable" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.tv}"></i>
+                    <span class="glyphicon glyphicon-blackboard space disable" ng-class="{ ' disable': !scheduleCtrl.room_details.roomDetails.projector}"></span>
+                    <span class="glyphicons glyphicons-tv"></span>
+                  </div>
+                  <p><strong>{{scheduleCtrl.room_details.roomName}}</strong></p>
+                  <hr />
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <tr ng-if = "scheduleCtrl.meetings.length > 0"> 
+                        <th> Date</th>
+                        <th> Timings</th>
+                        <th> Meeting</th>
+                        <th> Owner</th>
+                      </tr>
+                      <tr ng-repeat="obj in scheduleCtrl.meetings">
+                        <td>{{obj.date}}</td>
+                        <td>{{obj.from_time}} - {{obj.to_time}}</td>
+                        <td>{{obj.name}}</td>
+                        <td>{{obj.owner.name}}</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="well">
+                  <button ng-if="scheduleCtrl.edit_meeting_flag == true" type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="scheduleCtrl.updateMeeting()">Update meeting</button>
+                  <button ng-if="scheduleCtrl.edit_meeting_flag == false" type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="scheduleCtrl.schedule()">Schedule</button>
+                  <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Save button once you are done.</strong></p>
+                  <p class="text-left save-align">You can always edit it once it is saved.</p>
+                </div>
+              </div>
+            </div>
+            <div class="row" ng-if="scheduleCtrl.toggle">
+              <div ng-if="scheduleCtrl.scheduleSuccess">
+                <p style="color: #1b9d5c" class="col-md-12"> Meeting has been successfully scheduled. Add the invitees to the meeting. </p>
+              </div>
+              <div ng-if="scheduleCtrl.inviteeErr">
+                <p style="color: #a94442" class="col-md-12"> Can't send the invites without scheduling the meeting. </p>
+              </div>
+              <div ng-if="scheduleCtrl.uniqErr">
+                <p style="color: #a94442" class="col-md-12"> Invitee has already been invited. </p>
+              </div>
+              <div class="col-sm-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <p><strong>Invitees</strong></p>
+                  </div>
+                  <div class="panel-body">
+                    <form name="inviteesForm">
+                      <div class="row">
+                        <div class="col-xs-9">
+                          <div class="form-group invitees-form">
+                            <select class="form-control" data-placeholder="Search Venues..." ng-model='scheduleCtrl.inviteesForm.invitee' ng-options="obj as obj.name for obj in scheduleCtrl.users">
+                              <option value=""></option>
+                              <option value={{obj.id}} ng-repeat="obj in scheduleCtrl.users">{{obj.name}}</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-xs-3">
+                          <button type="button" class="btn btn-default btn-custom-2 full-button" ng-click="scheduleCtrl.inviteeAvailability()"> Add</button>
+                        </div>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <tr ng-repeat="obj in scheduleCtrl.detailsObj.invitees" ng-if="scheduleCtrl.currentUserId != obj.invitee_id">
+                            <td> {{obj.invitee.name}}</td>
+                            <td><i class="glyphicon glyphicon-remove" ng-click="scheduleCtrl.deleteInvitation(obj)"></td>
+                          </tr>
+                        </table>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="panel panel-default">
+                  <div class="panel-heading">
+                    <p class="pull-right" ng-if="scheduleCtrl.invitee_avail == false"><i class="glyphicon glyphicon-remove danger"></i> Not Available</p>
+                    <p class="pull-right" ng-if="scheduleCtrl.invitee_available"><i class="glyphicon glyphicon-ok green-color"></i> Available</p>
+                    <p><strong>{{scheduleCtrl.inviteeName}}</strong></p>
+                  </div>
+                  <div class="panel-body">
+                    <div class="table-responsive">
+                      <table class="table table-striped">
+                      <div>
+                      <tr ng-if="scheduleCtrl.invitee_avail == false"> 
+                          <th> Date</th>
+                          <th> Timings</th>
+                          <th> Meeting</th>
+                      </tr>
+                      </div>
+                        <tr ng-repeat="obj in scheduleCtrl.inviteeMeetings">
+                          <td>{{obj.date}}</td>
+                          <td>{{obj.from_time}} - {{obj.to_time}}</td>
+                          <td>{{obj.name}}</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6" ng-if="scheduleCtrl.invitee_avail == false">
+                Invitee is not available, would you like to reschedule the meeting ?
+                <a href="#" class="btn btn-default btn-custom-2 pull-right btn2" data-target="#schedule" ng-click="scheduleCtrl.edit()">Yes</button>
+                <a href="#" class="btn btn-default btn-custom-2 pull-right btn2" ng-click="scheduleCtrl.no()">No</a>
+              </div>
+            </div>
+            <div class="row">
+              <div ng-if="scheduleCtrl.toggle">
+                <button type="button" class="btn btn-default btn-custom-2 pull-right btn2" ng-click="scheduleCtrl.done()">Done</button>
+              </div>
+            </div>
+          </div>
+        </form >
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row text-center visible-xs">
+      <span class="glyphicon glyphicon-triangle-left pull-left"></span>
+      <button type="button" class="btn btn-default btn-tab">Jan 2nd</button>
+      <span class="glyphicon glyphicon-triangle-right pull-right"></span>
+    </div>
+    <div class="row text-center hidden-xs">
+      <span class="glyphicon glyphicon-triangle-left pull-left"></span>
+      <button type="button" class="btn btn-default btn-tab active-tab">Jan</button>
+      <button type="button" class="btn btn-default btn-tab">Feb</button>
+      <button type="button" class="btn btn-default btn-tab">Mar</button>
+      <button type="button" class="btn btn-default btn-tab">Apr</button>
+      <button type="button" class="btn btn-default btn-tab">May</button>
+      <button type="button" class="btn btn-default btn-tab">Jun</button>
+      <button type="button" class="btn btn-default btn-tab">Jul</button>
+      <button type="button" class="btn btn-default btn-tab">Aug</button>
+      <button type="button" class="btn btn-default btn-tab">Sep</button>
+      <button type="button" class="btn btn-default btn-tab">Oct</button>
+      <button type="button" class="btn btn-default btn-tab">Nov</button>
+      <button type="button" class="btn btn-default btn-tab">Dec</button>
+      <span class="glyphicon glyphicon-triangle-right pull-right"></span>
+    </div>
+    <div class="row text-center hidden-xs">
+      <span class="glyphicon glyphicon-triangle-left pull-left"></span>
+      <button type="button" class="btn btn-default btn-tab-date active-tab">1st-3rd</button>
+      <button type="button" class="btn btn-default btn-tab-date">4th-10th</button>
+      <button type="button" class="btn btn-default btn-tab-date">11th-17th</button>
+      <button type="button" class="btn btn-default btn-tab-date">18th-24th</button>
+      <button type="button" class="btn btn-default btn-tab-date">25th-31st</button>
+      <span class="glyphicon glyphicon-triangle-right pull-right"></span>
+    </div>
+    <div class="row text-center hidden-xs">
+      <span class="glyphicon glyphicon-triangle-left pull-left"></span>
+      <button type="button" class="btn btn-default btn-tab-day">Monday(11)</button>
+      <button type="button" class="btn btn-default btn-tab-day active-tab">Tuesday(12)</button>
+      <button type="button" class="btn btn-default btn-tab-day">Wednesday(13)</button>
+      <button type="button" class="btn btn-default btn-tab-day">Thursday(14)</button>
+      <button type="button" class="btn btn-default btn-tab-day">Friday(15)</button>
+      <button type="button" class="btn btn-default btn-tab-day">Saturday(16)</button>
+      <button type="button" class="btn btn-default btn-tab-day">Sunday(17)</button>
+      <span class="glyphicon glyphicon-triangle-right pull-right"></span>
+    </div>
+    <br />
+    <div class="row">
+      <ul class="nav nav-pills my-pills">
+        <li ng-repeat="obj in scheduleCtrl.meetingsDetails">
+          <a href="#" class="meeting" data-toggle="modal" data-target="#details" ng-click="scheduleCtrl.details(obj);">
+            <h5 class="green-color"><strong> {{obj.meetingInfo.name}} </strong></h5>
+            <p><i class="glyphicon glyphicon-time"></i>{{obj.meetingInfo.from_time}} - {{obj.meetingInfo.to_time}}</p>
+            <p class="orange-color"><i class="glyphicon glyphicon-map-marker"></i>{{obj.roomLocation}}</p>
+          </a>
+        </li>
+      </ul>
+    </div>
+    <div class="modal fade" id="details" role="dialog">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div class="modal-title details-title">
+              <div class="pull-right">
+                <span class="rsvp">RSVP</span>
+                <button type="button" value="yes" type="submit"  ng-click="scheduleCtrl.rsvp('yes')" class="btn btn-xs btn-default btn-custom-2">Yes</button>
+                <button type="button" type="submit"  value="maybe" ng-click="scheduleCtrl.rsvp('maybe')" class="btn btn-xs btn-default btn-custom-2">May be</button>
+                <button type="button" type="submit"  value="no" ng-click="scheduleCtrl.rsvp('no')" class="btn btn-xs btn-default btn-custom-2">No</button>
+              </div>
+              {{scheduleCtrl.detailsObj.meetingObj.meetingInfo.name}}
+            </div>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+              <div class="col-sm-7">
+                <p><i class="glyphicon glyphicon-time"></i> {{scheduleCtrl.detailsObj.meetingObj.meetingInfo.from_time}} - {{scheduleCtrl.detailsObj.meetingObj.meetingInfo.to_time}} , {{scheduleCtrl.detailsObj.meetingObj.meetingInfo.date}}</p>
+                <p class=" disablegrey-color"><i class="glyphicon glyphicon-map-marker orange-color"></i> {{scheduleCtrl.detailsObj.meetingObj.roomLocation}}
+                  <span class="pull-right">
+                    <span class="badge space">{{scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.seating_capacity}}
+                    </span>
+                    <span class="glyphicon glyphicon-refresh space g" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.ac}"></span>
+                    <i class="fa fa-wifi space" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.wifi}"></i>
+                    <i class="fa fa-microphone space disable" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.microphone}"></i>
+                    <span class="glyphicon glyphicon-volume-up space" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.speaker}"></span>
+                    <i class="fa fa-television space disable" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.tv}"></i>
+                    <span class="glyphicon glyphicon-blackboard space disable" ng-class="{ ' disable': !scheduleCtrl.detailsObj.meetingObj.meetingRoomDetails.projector}"></span>
+                    <span class="glyphicons glyphicons-tv "></span>
+                  </span>
+                </p>
+                <br />
+                <p>
+                </p>
+              </div>
+              <div class="col-sm-5">
+                <p><strong>Invitees</strong></p>
+                <div class="table-responsive">
+                  <table class="table table-striped">
+                    <tr ng-repeat="obj in scheduleCtrl.detailsObj.invitees">
+                      <td>{{obj.invitee.name}}</td>
+                      <td>{{obj.rsvp_status}}</td>
+                    </tr>
+                  </table>
+                </div>
+              </div>
+            </div>
+            <div class="row comments">
+              <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#comment" aria-expanded="true">Comments</a></li>
+                <li class><a data-toggle="tab" href="#history" aria-expanded="false">History</a></li>
+                <li class><a data-toggle="tab" href="#setting" aria-expanded="false">Settings</a></li>
+              </ul>
+              <div class="row ng-scope" ng-if="scheduleCtrl.commentere">
+                <div class="form-group" ng-class="{ 'has-error has-feedback':scheduleCtrl.commentere}" >
+                  <label ng-if="scheduleCtrl.commentere" class="control-label" for="inputError"> Not able to delete this comment</label>
+                  <span><button type="button" class="errorclose" data-dismiss="modal" ng-click="scheduleCtrl.commentere = false">×</button></span>
+                </div>
+              </div>
+              <div class="tab-content">
+                <div class="col-xs-4 col-sm-2">
+                  </div>
+                  <div class="row well" ng-repeat="obj in scheduleCtrl.commentsObj">
+                    <div class="col-xs-2 details-user">
+                    <div>
+                    <div class="pull-left panel-body">
+                      <a class="icon-btn">
+                        <span data-toggle="modal"  ng-click="scheduleCtrl.Del(obj);" class="glyphicon glyphicon-trash"></span>
+                      </a>
+                      </div>
+                      </div>
+                      <h7>{{obj.commenter}}</h7>
+                      <h6>{{obj.created_at | date}}</h6>
+                    </div>
+                    <div class="col-xs-10">
+                      <p>
+                        {{obj.comments}}
+                      </p>
+                    </div>
+                  </div>
+                  <br />
+                  <div class="row well">
+                    <div class="col-xs-6 col-sm-8">
+                      <form role="form" name="AddCommentform" novalidate>
+                        <div class="form-group">
+                         <div class="form-group" ng-class="{ 'has-error has-feedback': !scheduleCtrl.AddCommentform.comments.length &&scheduleCtrl.submitted}" >
+                          <label ng-if="scheduleCtrl.submitted && !scheduleCtrl.AddCommentform.comments.length " class="control-label" for="inputError"> Cannot be blank</label>
+                          <textarea  rows="3" id="" placeholder="Add Comment" id="comments"  name="comments" ng-model="scheduleCtrl.AddCommentform.comments" class="form-control" required>
+                          </textarea>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="col-xs-4 col-sm-2">
+                    <button type="button" class="btn btn-default comment-btn" ng-click="scheduleCtrl.comment()">Add Comment</button>
+                  </div>
+
+                </div>
+                <button type="button" data-toggle="modal" data-target="#editMeeting"  class="btn btn-default btn-custom-2 pull-right comment-btn">Edit Meeting</button>
+              </div>
+              <div id="history" class="tab-pane fade">
+                <div class="row panel">
+                  <div class="col-xs-4">
+                    <p><span class="glyphicon glyphicon-calendar"></span>
+                      18/04/2015
+                    </p>
+                  </div>
+                  <div class="col-xs-8">
+                    <p>
+                      Krishnaprasad Varma created this meeting
+                    </p>
+                  </div>
+                </div>
+                <div class="row panel">
+                  <div class="col-xs-4">
+                    <p> <span class="glyphicon glyphicon-calendar"></span>
+                      18/04/2015
+                    </p>
+                  </div>
+                  <div class="col-xs-8">
+                    <p>
+                      Krishnaprasad Varma invited Sunitha K Menon to this meeting
+                    </p>
+                  </div>
+                </div>
+                <div class="row panel">
+                  <div class="col-xs-4">
+                    <p> <span class="glyphicon glyphicon-calendar"></span>
+                      18/04/2015
+                    </p>
+                  </div>
+                  <div class="col-xs-8">
+                    <p>
+                      Sunitha K Menon accepted the invitation to this meeting
+                    </p>
+                  </div>
+                </div>
+                <div class="row panel">
+                  <div class="col-xs-4">
+                    <p> <span class="glyphicon glyphicon-calendar"></span>
+                      21/04/2015
+                    </p>
+                  </div>
+                  <div class="col-xs-8">
+                    <p>
+                      Aashish Kumar accepted the invitation to this meeting
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div id="setting" class="tab-pane fade">
+                <div class="row">
+                  <div class="col-sm-6">
+                    <p><strong>Transfer the Ownership</strong></p>
+                    <hr />
+                    <div class="form-group meeting-search">
+                      <select class="form-control chosen-select meeting-search" data-placeholder="Search Venues...">
+                        <option value=""></option>
+                        <option value="DevOps for Developers" selected="selected">Prakash S L</option>
+                        <option value="The Docker Book">Sunitha Menon</option>
+                        <option value="Docker Hands on">Ashish Kumar</option>
+                        <option value="Ansible: Up and Running">Mahesh D Chinnaswamy</option>
+                      </select>
+                    </div>
+                    <div class="checkbox">
+                      <label><input type="checkbox" value="" checked="checked">Remove me from the invitees</label>
+                    </div>
+                    <div class="pull-right">
+                      <button class="btn btn-sm btn-primary btn-custom">
+                        Transfer</a></li>
+                      </div>
+                    </div>
+                    <div class="col-sm-6">
+                      <p><strong>Choose a Color</strong></p>
+                      <hr />
+                      <form role="form">
+                        <input class="color" type="color" name="favcolor" value="#ff0000">
+                      </form>
+                      <div class="pull-right">
+                        <button class="btn btn-sm btn-primary btn-custom">Save</a></li>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="filter" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <div class="modal-title">
+                Filter
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-sm-6">
+                  <p><i class="glyphicon glyphicon-map-marker orange-color glyph-space"></i>Location</p>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group inline-block-full">
+                    <select class="form-control" ng-model="scheduleCtrl.filterObj.meeting_room_id" ng-options="obj as obj.roomName for obj in scheduleCtrl.meetingRooms" >
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <p><i class="glyphicon glyphicon-user glyph-space"></i>Organiser</p>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group inline-block-full">
+                    <select class="form-control" data-placeholder="Search Venues..." ng-model='scheduleCtrl.filterObj.owner_id'>
+                      <option value=""></option>
+                      <option value={{obj.id}} ng-repeat="obj in scheduleCtrl.allusers">{{obj.name}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <p><i class="glyphicon glyphicon-user glyph-space"></i>Has invited</p>
+                </div>
+                <div class="col-sm-6">
+                  <div class="form-group inline-block-full">
+                    <select class="form-control" data-placeholder="Search Venues..." ng-model='scheduleCtrl.filterObj.invitee_id'>
+                      <option value=""></option>
+                      <option value={{obj.id}} ng-repeat="obj in scheduleCtrl.allusers">{{obj.name}}</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" ng-click = "scheduleCtrl.filterMeetings()" class="btn btn-default btn-custom-2 pull-right" data-dismiss="modal">Filter</button>
+              <button type="button" class="btn btn-default pull-right space" ng-click="scheduleCtrl.info()" data-dismiss="modal">Reset Filter</button>
+              <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Filter button once you select filters.</strong></p>
+              <p class="text-left save-align">In order to reset the Filter button again and this pop up will appear again. Click on Reset Filter button.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="editMeeting" role="dialog">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal">&times;</button>
+              <div class="modal-title">
+                Edit Meeting
+              </div>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <i class="glyphicon glyphicon-time glyph-space"></i>
+                  <input class="space-bottom" type="time" name="usr_time">
+                  <input class="space-bottom" type="time" name="usr_time">
+                </div>
+                <div class="col-md-3">
+                  <i class="glyphicon glyphicon-calendar glyph-space"></i>
+                  <input class="space-bottom "type="date" name="bday">
+                </div>
+                <div class="col-md-3">
+                  <i class="glyphicon glyphicon-map-marker glyph-space orange-color"></i>
+                  <div class="form-group inline-block">
+                    <select class="form-control chosen-select" data-placeholder="Search Venues...">
+                      <option value=""></option>
+                      <option value="DevOps for Developers" selected="selected">Denver, Mysore</option>
+                      <option value="The Docker Book">Dubai</option>
+                      <option value="Docker Hands on">Costa Rica</option>
+                      <option value="Ansible: Up and Running">Mysore</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <p><i class="glyphicon glyphicon-ok green-color"></i> Available</p>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="form-group">
+                    <textarea class="form-control" rows="10" id="" placeholder="Add Comment">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. Aenean velit odio, elementum in tempus ut, vehicula eu diam. Pellentesque rhoncus aliquam mattis.
+                    </textarea>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="pull-right">
+                    <span class="badge space">75</span>
+                    <span class="glyphicon glyphicon-refresh space"></span>
+                    <i class="fa fa-wifi space"></i>
+                    <i class="fa fa-microphone space"></i>
+                    <span class="glyphicon glyphicon-volume-up space"></span>
+                    <i class="fa fa-television space disable"></i>
+                    <span class="glyphicon glyphicon-blackboard space disable"></span>
+                    <span class="glyphicons glyphicons-tv"></span>
+                  </div>
+                  <p><strong>Denver, Mysore</strong></p>
+                  <hr />
+                  <div class="table-responsive">
+                    <table class="table table-striped">
+                      <tr>
+                        <td>9:30 AM - 9:45 AM</td>
+                        <td>Dish Dash Meeting</td>
+                      </tr>
+                      <tr>
+                        <td>10:30 AM - 11:00 AM</td>
+                        <td>HR Meeting</td>
+                      </tr>
+                      <tr>
+                        <td>2:30 PM - 3:30 PM</td>
+                        <td>Private Meeting (Mahesh)</td>
+                      </tr>
+                      <tr>
+                        <td>4:30 PM - 5:00 PM</td>
+                        <td>Private Meeting (Krishnan)</td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <br />
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <p><strong>Invitees</strong></p>
+                    </div>
+                    <div class="panel-body">
+                      <div class="row">
+                        <div class="col-xs-9">
+                          <div class="form-group invitees-form">
+                            <select class="form-control chosen-select" data-placeholder="Search Venues...">
+                              <option value=""></option>
+                              <option value="DevOps for Developers" selected="selected">Prakash S L</option>
+                              <option value="The Docker Book">Dubai</option>
+                              <option value="Docker Hands on">Costa Rica</option>
+                              <option value="Ansible: Up and Running">Mysore</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-xs-3">
+                          <button type="button" class="btn btn-default btn-custom-2 full-button">Add</button>
+                        </div>
+                      </div>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <tr>
+                            <td>Sunitha K Menon </td>
+                            <td><i class="glyphicon glyphicon-remove"></td>
+                          </tr>
+                          <tr>
+                            <td>Aashish Kumar</td>
+                            <td><i class="glyphicon glyphicon-remove"></td>
+                          </tr>
+                          <tr>
+                            <td>Mahesh D Chinnaswamy</td>
+                            <td><i class="glyphicon glyphicon-remove"></td>
+                          </tr>
+                          <tr>
+                            <td>Nidhi Laskar</td>
+                            <td><i class="glyphicon glyphicon-remove"></td>
+                          </tr>
+                          <tr>
+                            <td>Apoorva</td>
+                            <td><i class="glyphicon glyphicon-remove"></td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <div class="panel panel-default">
+                    <div class="panel-heading">
+                      <p class="pull-right"><i class="glyphicon glyphicon-remove danger"></i> Not Available</p>
+                      <p><strong>Prakash S L</strong></p>
+                    </div>
+                    <div class="panel-body">
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <tr>
+                            <td>9:00 AM - 10:00 AM</td>
+                            <td>Vested Meeting</td>
+                          </tr>
+                        </table>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row comments">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a data-toggle="tab" href="#comment">Comments</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div id="comment" class="tab-pane fade in active">
+                    <div class="row well">
+                      <div class="col-xs-2 details-user">
+                        <img src="images/man.png"  width="40px" height="40px">
+                        <h6>18/04/2015</h6>
+                      </div>
+                      <div class="col-xs-10">
+                        <p>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus, ac blandit elit tincidunt id. Sed rhoncus, tortor sed eleifend tristique, tortor mauris molestie elit, et lacinia ipsum quam nec dui. Quisque nec mauris sit amet elit iaculis pretium sit amet quis magna. Aenean velit odio, elementum in tempus ut, vehicula eu diam. Pellentesque rhoncus aliquam mattis. Ut vulputate eros sed felis sodales nec vulputate justo hendrerit. Vivamus varius pretium ligula, a aliquam odio euismod sit amet. Quisque laoreet sem sit amet orci ullamcorper at ultricies metus viverra. Pellentesque arcu mauris, malesuada quis ornare accumsan, blandit sed diam.
+                        </p>
+                      </div>
+                    </div>
+                    <div class="row well">
+                      <div class="col-xs-2 details-user">
+                        <img src="images/woman.png" width="40px" height="40px">
+                        <h6>21/04/2015</h6>
+                      </div>
+                      <div class="col-xs-10">
+                        <p>
+                          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit, vulputate eu pharetra nec, mattis ac neque. Duis vulputate commodo lectus, ac blandit elit tincidunt id.
+                        </p>
+                      </div>
+                    </div>
+                    <br />
+                    <div class="row well">
+                      <div class="col-xs-2 col-sm-2 details-user">
+                        <img src="images/woman.png" width="40px" height="40px">
+                      </div>
+                      <div class="col-xs-6 col-sm-8">
+                        <div class="form-group">
+                          <textarea class="form-control" rows="3" id="" placeholder="Add Comment">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla quam velit
+                          </textarea>
+                        </div>
+                      </div>
+                      <div class="col-xs-4 col-sm-2">
+                        <button type="button" class="btn btn-default comment-btn">Add Comment</button>
+                      </div>
+                    </div>
+                    <button type="button" data-toggle="modal" data-target="#editMeeting"  class="btn btn-default btn-custom-2 pull-right comment-btn">Save</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,452 @@
+<div ng-controller = "VenueCtrl as venueCtrl">
+  <div class="container-fluid">
+    <div class="row sub-header">
+      <div class="col-sm-4">
+        <h2>Manage Venues</h2>
+        <br />
+      </div>
+      <div class="col-sm-8">
+        <ul class="nav navbar-nav navbar-right user-button">
+          <li><a href="#" class="btn btn-primary btn-custom add" data-toggle="modal" data-target="#addVenue" ng-click="venueCtrl.errorMsgFlag = false; venueCtrl.submitted = false">Add Venue</a></li>
+          <div class="modal fade" id="addVenue" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Add Venue</h4>
+                </div>
+                <div ng-if="venueCtrl.errorMsgFlag">
+                  <p style="color: #a94442" class="col-md-12"> Venue already exists. </p>
+                </div>
+                <div class="modal-body">
+                  <form role="form" name="AddVenueform" novalidate>
+                    <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.AddVenueform.name.length && venueCtrl.submitted}">
+                      <label ng-show="!venueCtrl.AddVenueform.name.length && venueCtrl.submitted" class="control-label" for="inputError">*Required Field</label>
+                      <input type="text" class="form-control" id="name" placeholder="Name" name="name" ng-model="venueCtrl.AddVenueform.name" class="form-control" required>
+                    </div>
+                    <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.AddVenueform.location.length && venueCtrl.submitted }">
+                      <label ng-show="!venueCtrl.AddVenueform.location.length && venueCtrl.submitted" class="control-label" for="inputError">*Required Field</label>
+                      <textarea class="form-control" rows="5" id="address" placeholder="Address" name="location" id="location" class="form-control" ng-model="venueCtrl.AddVenueform.location" required >
+                      </textarea>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.create()">Save</button>
+                  <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Save button once you are done.</strong></p>
+                  <p class="text-left save-align">You can always edit it once it is saved.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <li class="search">
+            <div class="form-group">
+              <form class="navbar-form" role="search">
+                <div class="input-group">
+                  <input type="text" class="form-control" ng-model="venueCtrl.details.query" placeholder="Search Venues.." name="search-term" id="search-term" ng-keyup ="venueCtrl.search()">
+                  <div class="input-group-btn">
+                    <button class="btn btn-default" type="submit"><i class="glyphicon glyphicon-search"></i></button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-4 side-bar">
+        <ul class="nav nav-pills nav-stacked hidden-xs">
+          <li  ng-repeat="obj in venueCtrl.dataObj | orderBy:'-updated_at'  | filter:obj" ng-click = "venueCtrl.fullDetails(obj, $index)" ng-class="{'active': $index == venueCtrl.selectedRow}">
+            <a href="#">
+              <h4 ng-class="{'white-color': $index == venueCtrl.selectedRow}" style="text-transform: capitalize;">{{ obj.name | limitTo: 20}}</h4>
+              <p ng-class="{'white-color': $index == venueCtrl.selectedRow}" style="text-transform: capitalize;" class="address">{{ obj.location }}</p>
+            </a>
+          </li>
+          <div style="text-align:right">
+            <input type="button" ng-class="{'selected_page':venueCtrl.selectedPage == n}" ng-repeat="n in [] | range:venueCtrl.no_of_pages" value="{{$index+1}}" ng-click=venueCtrl.paginate(n)>
+          </div>
+        </ul>
+      </div>
+      <div class="col-sm-8 description">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <div class="dropdown pull-right">
+              <button type="button" class="btn btn-info btn-lg btn-menu dropdown-toggle" data-toggle="dropdown">
+              <span class="glyphicon glyphicon-option-horizontal"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="#" data-toggle="modal" data-target="#editVenue" ng-click="venueCtrl.editted = false; venueCtrl.errorMsg = false"> Edit</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#deleteVenue">Delete</a></li>
+              </ul>
+            </div>
+            <div ng-if="venueCtrl.getFlag == false" >
+              <h4 style="text-transform: capitalize;">{{venueCtrl.dataObj[0].name}}</h4>
+              <p><span class="grey-color" style="text-transform: capitalize;">
+                {{venueCtrl.dataObj[0].location}}</span>
+              </p>
+            </div>
+            <div ng-if="venueCtrl.getFlag == true" >
+              <h4 style="text-transform: capitalize;">{{venueCtrl.details.name}}</h4>
+              <p><span style="text-transform: capitalize;" class="grey-color">
+                {{venueCtrl.details.location}}</span>
+              </p>
+            </div>
+          </div>
+          <div class="modal fade" id="editVenue" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Edit Venue</h4>
+                </div>
+                <div ng-if="venueCtrl.errorMsgFlag">
+                  <p style="color: #a94442" class="col-md-12"> Venue already exists.</p>
+                </div>
+                <div class="modal-body">
+                  <form role="form" name="VenueEditForm" novalidate>
+                    <div ng-if="venueCtrl.getFlag == false" >
+                      <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.dataObj[0].name.length && venueCtrl.editted }">
+                        <input type="hidden" placeholder="Id" name="id" ng-model="venueCtrl.dataObj[0].id" class="form-control" >
+                        <label ng-show="!venueCtrl.dataObj[0].name.length && venueCtrl.editted" class="control-label" for="inputError">*Required Field</label>
+                        <input type="text" class="form-control" id="name" placeholder="Name" name="name" ng-model="venueCtrl.dataObj[0].name" class="form-control" required >
+                      </div>
+                      <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.dataObj[0].location.length && venueCtrl.editted }">
+                        <label ng-show="!venueCtrl.dataObj[0].location.length && venueCtrl.editted" class="control-label" for="inputError">*Required Field</label>
+                        <textarea class="form-control" rows="5" id="address" placeholder="Address" name="location" id="location" class="form-control" ng-model="venueCtrl.dataObj[0].location" required ></textarea>
+                      </div>
+                    </div>
+                    <div ng-if="venueCtrl.getFlag == true" >
+                      <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.details.name.length && venueCtrl.editted }">
+                        <input type="hidden" placeholder="Id" name="id" ng-model="venueCtrl.details.id" class="form-control" >
+                        <label ng-show="!venueCtrl.details.name.length && venueCtrl.editted" class="control-label" for="inputError">*Required Field</label>
+                        <input type="text" class="form-control" id="name" placeholder="Name" name="name" ng-model="venueCtrl.details.name" class="form-control" required >
+                      </div>
+                      <div class="form-group" ng-class="{ 'has-error has-feedback': !venueCtrl.details.location.length && venueCtrl.editted }">
+                        <label ng-show="!venueCtrl.details.location.length && venueCtrl.editted" class="control-label" for="inputError">*Required Field</label>
+                        <textarea class="form-control" rows="5" id="address" placeholder="Address" name="location" id="location" class="form-control" ng-model="venueCtrl.details.location" required ></textarea>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.edit()" >Save</button>
+                  <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Save button once you are done.</strong></p>
+                  <p class="text-left save-align">You can always edit it once it is saved.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="deleteVenue" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Delete Venue</h4>
+                </div>
+                <div class="modal-body">
+                  <form role="form" name="DeleteVenueForm" novalidate>
+                    <div class="form-group" ng-class="{ 'has-error has-feedback': venueCtrl.msg}" >
+                      <label ng-hide="venueCtrl.msg " class="control-label" for="inputError"> Are you sure you want to delete this venue?</label>
+                      <label ng-show="venueCtrl.msg " class="control-label" for="inputError">{{venueCtrl.msg}}</label>
+                      <br>
+                      <br>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer" >
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.del()"  ng-disabled="!DeleteVenueForm.$valid" ng-hide="venueCtrl.msg ">Ok</button>
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-disabled="!DeleteVenueForm.$valid" data-dismiss= "modal" ng-click="venueCtrl.msg = ''">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal fade" id="deleteRoom" role="dialog">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title">Delete Room</h4>
+                </div>
+                <div class="modal-body">
+                  <form role="form" name="DeleteVenueForm" novalidate>
+                    <div class="form-group" ng-class="{ 'has-error has-feedback': venueCtrl.msg1}" >
+                      <label ng-hide="venueCtrl.msg1 " class="control-label" for="inputError"> Are you sure you want to delete this Room?</label>
+                      <label ng-show="venueCtrl.msg1 " class="control-label" for="inputError">{{venueCtrl.msg1}}</label>
+                      <br>
+                      <br>
+                    </div>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.delRoom(obj.id)" ng-disabled="!DeleteVenueForm.$valid" ng-hide="venueCtrl.msg1 " >Ok</button>
+                  <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-disabled="!DeleteVenueForm.$valid" data-dismiss= "modal" ng-click="venueCtrl.msg1 = ''">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="panel-body">
+            <div class="pull-right">
+              <button id="register" class="btn btn-sm btn-primary btn-custom" data-toggle="modal" data-target="#addMeetingRoom"  ng-click="venueCtrl.errorMsg = false; venueCtrl.submitted = false">
+                Add a Room</a></li>
+            </div>
+            <p><strong>Meeting Rooms</strong></p>
+            <br />
+            <div class="modal fade" id="addMeetingRoom" role="dialog">
+              <div class="modal-dialog">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Add a Meeting Room</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form class="form-horizontal" name="MeetingRoomform">
+                      <label ng-show="venueCtrl.MeetingRoomform.name.length < 4" class="col-md-12 error-message"  for="inputError" ng-if="venueCtrl.namelengthFlag"> Minimum 3 Characters Required</label>
+                      <div class="form-group">
+                        <label for="name" class="col-sm-4 control-label" >Name</label>
+                        <div class="col-sm-8" ng-class="{ 'has-error has-feedback': !venueCtrl.MeetingRoomform.name && venueCtrl.submitted}">
+                          <input type="text" class="form-control" id="name" placeholder="Name of the Meeting Room / Hall" ng-model="venueCtrl.MeetingRoomform.name">
+                          <label ng-show="!venueCtrl.MeetingRoomform.name && venueCtrl.submitted" class="control-label" for="inputError">*Required Field</label>
+                        </div>
+                      </div>
+                      <div class="form-group">
+                        <label for="seat" class="col-sm-4 control-label">Seating Capacity</label>
+                        <div class="col-sm-3" ng-class="{ 'has-error has-feedback': !venueCtrl.MeetingRoomform.seating_capacity && venueCtrl.submitted}">
+                          <input type="number" class="form-control" id="seat" ng-model="venueCtrl.MeetingRoomform.seating_capacity" min="0" max="100">
+                          <label ng-show="!venueCtrl.MeetingRoomform.seating_capacity && venueCtrl.submitted" class="control-label" for="inputError">*Required Field</label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="ac" value="true"  ng-model="venueCtrl.MeetingRoomform.ac">A/C
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="ac" checked="checked" ng-model="venueCtrl.MeetingRoomform.ac">Non A/C
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="wifi" value="true"  ng-model="venueCtrl.MeetingRoomform.wifi">Strong WiFi
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="wifi" checked="checked"  ng-model="venueCtrl.MeetingRoomform.wifi">WiFi strength is weak
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="mic" value="true"  ng-model="venueCtrl.MeetingRoomform.microphone">Microphone Available
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="mic" checked="checked"  ng-model="venueCtrl.MeetingRoomform.microphone">Microphone not Available
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="speaker" value="true"  ng-model="venueCtrl.MeetingRoomform.speaker">Speakers Available
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="speaker" checked="checked"  ng-model="venueCtrl.MeetingRoomform.speaker">Speakers not Available
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="tv" value="true"  ng-model="venueCtrl.MeetingRoomform.tv">TV
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="tv" checked="checked"  ng-model="venueCtrl.MeetingRoomform.tv">No TV
+                          </label>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="projector" value="true"  ng-model="venueCtrl.MeetingRoomform.projector">Projector can be placed
+                          </label>
+                        </div>
+                        <div class="radio col-xs-6">
+                          <label>
+                            <input type="radio" name="projector" checked="checked"  ng-model="venueCtrl.MeetingRoomform.projector">No Space to Projector
+                          </label>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.roomcreate()">Save</button>
+                    <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Save button once you are done.</strong></p>
+                    <p class="text-left save-align">You can always edit it once it is saved.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="panel-group">
+              <div class="panel panel-default"  ng-repeat="obj in venueCtrl.mtgObj | orderBy:'-updated_at'">
+                <div class="panel-body">
+                  <div class="pull-right">
+                    <span class="badge space">{{ obj.seating_capacity}}</span>
+                    <span class="glyphicon glyphicon-refresh space" ng-class="{ ' disable': !obj.ac}"></span>
+                    <i class="fa fa-wifi space" ng-class="{ ' disable': !obj.wifi}"></i>
+                    <i class="fa fa-microphone space " ng-class="{ ' disable': !obj.microphone}"></i>
+                    <span class="glyphicon glyphicon-volume-up space" ng-class="{ ' disable': !obj.speaker}"></span>
+                    <i class="fa fa-television space " ng-class="{ ' disable': !obj.tv}"></i>
+                    <span class="glyphicon glyphicon-blackboard space" ng-class="{ ' disable': !obj.projector}"></span>
+                    <span class="glyphicons glyphicons-tv "></span>
+                  </div>
+                  <a class="icon-btn" data-toggle="modal" data-target="#editRoom"  ng-click="venueCtrl.editRoom(obj.id);venueCtrl.editted = false; venueCtrl.errorMsg = false; ">
+                  <span class="glyphicon glyphicon-edit"></span>
+                  </a>
+                  <a class="icon-btn">
+                  <span data-toggle="modal" data-target="#deleteRoom" ng-click="venueCtrl.roomDel(obj);" class="glyphicon glyphicon-trash"></span>
+                  </a>
+                  <a href="" class="place"><span style="text-transform: capitalize;" >
+                  {{ obj.name | limitTo: 20}}</span></a>
+                </div>
+              </div>
+              <div class="modal fade" id="editRoom" role="dialog">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                      <h4 class="modal-title">Edit a Meeting Room</h4>
+                    </div>
+                    <div class="modal-body">
+                      <form class="form-horizontal">
+                        <h4 class="orange-color"></h4>
+                        <div class="form-group">
+                          <label for="name" class="col-sm-4 control-label">Name</label>
+                          <div class="col-sm-8" ng-class="{ 'has-error has-feedback': !venueCtrl.editRoomObj.name && venueCtrl.mtgeditted}">
+                            <input type="text" class="form-control" id="name" placeholder="Name of the Meeting Room / Hall" ng-model="venueCtrl.editRoomObj.name">
+                            <label ng-show="!venueCtrl.editRoomObj.name && venueCtrl.mtgeditted" class="control-label" for="inputError">*Required Field</label>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="seat" class="col-sm-4 control-label">Seating Capacity</label>
+                          <div class="col-sm-3" ng-class="{ 'has-error has-feedback': !venueCtrl.editRoomObj.seating_capacity && venueCtrl.mtgeditted}">
+                            <input type="number" class="form-control" id="seat" ng-model="venueCtrl.editRoomObj.seating_capacity" min="0" max="100">
+                            <label ng-show="!venueCtrl.editRoomObj.seating_capacity && venueCtrl.mtgeditted" class="control-label" for="inputError">*Required Field</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="ac" checked="checked" ng-model="venueCtrl.editRoomObj.ac" ng-value="true" >A/C
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="ac" ng-model="venueCtrl.editRoomObj.ac" ng-value="false">Non A/C
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="wifi" checked="checked" ng-model="venueCtrl.editRoomObj.wifi" ng-value="true">Strong WiFi
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="wifi" ng-model="venueCtrl.editRoomObj.wifi" ng-value="false">WiFi strength is weak
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="mic" checked="checked" ng-model="venueCtrl.editRoomObj.microphone" ng-value="true">Microphone Available
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="mic" ng-model="venueCtrl.editRoomObj.microphone" ng-value="false">Microphone not Available
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="speaker" checked="checked"ng-model="venueCtrl.editRoomObj.speaker" ng-value="true" >Speakers Available
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="speaker" ng-model="venueCtrl.editRoomObj.speaker" ng-value="false">Speakers not Available
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="tv" checked="checked" ng-model="venueCtrl.editRoomObj.tv" ng-value="true">TV
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="tv" ng-model="venueCtrl.editRoomObj.tv" ng-value="false">No TV
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="projector" checked="checked"ng-model="venueCtrl.editRoomObj.projector" ng-value="true">Projector can be placed
+                            </label>
+                          </div>
+                          <div class="radio col-sm-6">
+                            <label>
+                            <input type="radio" name="projector"ng-model="venueCtrl.editRoomObj.projector" ng-value="false">No Space to Projector
+                            </label>
+                          </div>
+                        </div>
+                      </form>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default btn-custom-2 pull-right" ng-click="venueCtrl.Roomedit()">Save</button>
+                      <p class="text-left orange-color"><span class="glyphicon glyphicon-bell"></span><strong>Click on the Save button once you are done.</strong></p>
+                      <p class="text-left save-align">You can always edit it once it is saved.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="styles/chosen-plugin/chosen.jquery.js" type="text/javascript"></script>
+<script src="styles/chosen-plugin/docsupport/prism.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+  var config = {
+    '.chosen-select'           : {},
+    '.chosen-select-deselect'  : {allow_single_deselect:true},
+    '.chosen-select-no-single' : {disable_search_threshold:10},
+    '.chosen-select-no-results': {no_results_text:'Oops, nothing found!'},
+    '.chosen-select-width'     : {width:"95%"}
+  }
+  for (var selector in config) {
+    $(selector).chosen(config[selector]);
+  }
+</script>
